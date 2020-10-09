@@ -47,7 +47,7 @@ const CheckoutView = ({ cartValue, clearCart, orderValue, clearOrder }: Props) =
           return ({ bikeId: bike.id })
         })      
       },
-      refetchQueries: ["GetBikes", {query: GET_RESERVATIONS, variables: { userId: user.sub }}],       
+      refetchQueries: ["GetBikes", {query: GET_RESERVATIONS, variables: { userId: user.sub }}]      
     });
     clearCart();
     clearOrder();
