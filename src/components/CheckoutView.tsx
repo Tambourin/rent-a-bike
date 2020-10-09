@@ -1,13 +1,13 @@
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import React from 'react';
-import { ADD_RESERVATION, GET_CART, GET_ORDER } from '../queries/queries';
-import { Button, Header2, Header3, Input } from './styledBasicComponents';
-import { CartData, OrderData, ReservationVar } from '../types/types'
+import { ADD_RESERVATION, GET_RESERVATIONS } from '../queries/queries';
+import { Button, Header2, Header3 } from './styledBasicComponents';
+import { Cart, Order, ReservationVar } from '../types/types'
 import styled from 'styled-components';
-import useOrder from '../hooks/useOrder';
-import { cartVarible, orderVariable } from '../cache';
-import useCart from '../hooks/useCart';
 import { useHistory } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
+import LoginButton from './LoginButton';
+import Loader from './Loader';
 
 const Container = styled.div`
   background-color: whitesmoke;
@@ -16,31 +16,38 @@ const Container = styled.div`
   flex-direction: column;
 `
 
-const CheckoutView = () => {
+interface Props {
+  cartValue: Cart,
+  clearCart: Function,
+  orderValue: Order,
+  clearOrder: Function
+}
+
+const CheckoutView = ({ cartValue, clearCart, orderValue, clearOrder }: Props) => {
   const history = useHistory();
-  const { setCustomerName,clearOrder } = useOrder(orderVariable)
-  const { clearCart } = useCart(cartVarible);
-  const { data } = useQuery<CartData>(GET_CART);
-  const { data: orderData } = useQuery<OrderData>(GET_ORDER);
   const [ addReservation ] = useMutation<{id: string}, ReservationVar>(ADD_RESERVATION);
+  const { user, isLoading, isAuthenticated } = useAuth0();
   
-  if(!orderData || !data) {
-    return <p>Nothing selected</p>;
+  if(isLoading) {
+    return (
+      <Loader />
+    )
   }
- 
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();   
     addReservation(
       {
       variables: { 
-        startDate: orderData.Order.startDate,
-        hours: orderData.Order.hours,
-        customerName: orderData.Order.customerName,
-        bikes: data.Cart.items.map(bike => {
+        startDate: orderValue.startDate,
+        hours: orderValue.hours,
+        customerName: orderValue.customerName,
+        userId: user.sub,
+        bikes: cartValue.items.map(bike => {
           return ({ bikeId: bike.id })
         })      
       },
-      refetchQueries: ["GetBikes"]      
+      refetchQueries: ["GetBikes", {query: GET_RESERVATIONS, variables: { userId: user.sub }}],       
     });
     clearCart();
     clearOrder();
@@ -52,23 +59,26 @@ const CheckoutView = () => {
       <Header2>Checkout:</Header2>
       <Header3>Selected bikes</Header3>
       {
-        data?.Cart.items.map(item => (
+        cartValue.items.map(item => (
           <div key={item.id}>
             {item.Model.name}
           </div>
         ))
       }
       <Header3>Date</Header3>
-      <p>{orderData?.Order.startDate.toDateString()}</p>
+    <p>{orderValue.startDate.toDateString()}, {orderValue.hours} hours</p>
       <Header3>Sum</Header3>
-      {data?.Cart.items.reduce((a, item) => a + item.Model.price*orderData?.Order.hours, 0)} €
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="customer_name">Customer name:</label>
-        <Input value={orderData.Order.customerName} onChange={(event) => setCustomerName(event.target.value)} name="customer_name" />
-        <br></br>
-        <Button>Make reservation</Button>
-      </form>
-      
+      {cartValue.items.reduce((a, item) => a + item.Model.price*orderValue.hours, 0)} €
+      {isAuthenticated && user ? 
+        <p>Logged in as {user.name}</p> 
+      : 
+        <div>Login or create an account to place an order<LoginButton /></div> 
+      } 
+      {user && cartValue.items.length > 0 ?
+        <Button onClick={handleSubmit}>Make reservation</Button>
+      : 
+        <Button disabled>Required fields missing</Button>
+      }
     </Container>
   )
 }

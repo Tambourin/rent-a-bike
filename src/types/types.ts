@@ -15,11 +15,30 @@ export interface Cart {
 export interface Order {
     startDate: Date;
     hours: number;
-    customerName: string;
+    customerName: string;   
+}
+
+export interface Reservation {
+  start_date: Date;
+  id: string;
+  hours: number;
+  Resrvation_Bikes: [{
+    Bike: {
+      id: string;
+      Model: {
+        name: string;
+      }
+    }
+  }]
+}
+
+export interface ReservationData {
+  Reservation: Reservation[];
 }
 
 export interface ReservationVar extends Order {
   bikes: { bikeId: string }[];
+  userId: string;
 }
 
 export interface CartData {

@@ -2,17 +2,12 @@ import React, { useState } from 'react';
 import { Bike, Cart } from '../types/types';
 import styled from 'styled-components';
 import { useSpring, animated } from 'react-spring';
-import { cartVarible } from '../cache';
-import useCart from '../hooks/useCart';
-import { useQuery } from '@apollo/client';
-import { GET_CART } from '../queries/queries';
 
 interface Props {
-  bike: Bike;
-  addItem: Function;
-}
-interface CartData {
-  Cart: Cart;
+  bike: Bike; 
+  cartValue: Cart, 
+  removeItem: Function, 
+  addItem: Function
 }
 
 interface ButtonProps {
@@ -80,12 +75,9 @@ const BikeNumber = styled.p`
   left: 1;
 `
 
-const ListItem = ({ bike, addItem }: Props) => {
-  const [ showButton, setShowButton ] = useState(false);
-  const { data: cartData } = useQuery<CartData>(GET_CART);
-  const { removeItem } = useCart(cartVarible)
-
-  const selected = cartData?.Cart.items.find(item => item.id === bike.id) ? true : false
+const ListItem = ({ bike, cartValue, removeItem, addItem }: Props) => {
+  const [ showButton, setShowButton ] = useState(false);  
+  const selected = cartValue.items.find(item => item.id === bike.id) ? true : false
   const props = useSpring({opacity: selected ? 0.4 : 1})
 
   const toggleSelected = () => {    

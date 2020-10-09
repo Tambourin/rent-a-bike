@@ -3,24 +3,26 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './components/App';
 import * as serviceWorker from './serviceWorker';
-import { ApolloClient, ApolloProvider } from '@apollo/client'
-import { cache } from './cache'
-import { BrowserRouter } from 'react-router-dom'
-
-const client = new ApolloClient({
-  uri: "https://eager-parakeet-69.hasura.app/v1/graphql",
-  cache: cache
-});
-
-
+import { ApolloProvider } from '@apollo/client';
+import { BrowserRouter } from 'react-router-dom';
+import { Auth0Provider } from "@auth0/auth0-react";
+import client from './configureApollo'
 
 ReactDOM.render(
   <React.StrictMode>
-    <ApolloProvider client={client} >
-      <BrowserRouter>
-        <App />
+    <BrowserRouter>
+      <Auth0Provider
+      domain="taukopaikat.eu.auth0.com"
+      clientId="j8tAjDsCvaMJLRefXMDie4YZhCZa2bTg"
+      redirectUri={window.location.href}
+      audience="hasura"
+      >
+        <ApolloProvider client={client} >
+          <App />        
+        </ApolloProvider>
+      </Auth0Provider>
       </BrowserRouter>
-    </ApolloProvider>
+    
   </React.StrictMode>,
   document.getElementById('root')
 );

@@ -1,30 +1,48 @@
-import { Cart, Bike } from "../types/types";
-import { ReactiveVar } from "@apollo/client"
-import { initialCart } from "../cache";
+import { useState } from 'react';
+import { Bike, Cart } from '../types/types';
 
-const useCart = (cart: ReactiveVar<Cart>) => {
+const emptyCart: Cart = { items: [] };
+const key = 'cart';
+
+const useCart = () => {
+  const [ cartValue, setCartValue ] = useState<Cart>(() => {
+    const item = window.sessionStorage.getItem(key);
+    console.log(item);
+    return item ? JSON.parse(item) : emptyCart;
+  });
+
+  const setValues = (newCart: Cart) => {
+    setCartValue(newCart);    
+    window.sessionStorage.setItem(key, JSON.stringify(newCart));
+  }
+
   const addItem = (newItem: Bike) => {
-    cart({            
+    const newCart: Cart = {          
+      ...cartValue,  
       items: [
-        ...cart().items,
+        ...cartValue.items,
           newItem
         ]
-    })
+    }
+    setValues(newCart);
   }
 
   const removeItem = (bikeId: string) => {
-    cart({
+    const newCart: Cart = {
+      ...cartValue,
       items: [
-        ...cart().items.filter(item => item.id !== bikeId)
+        ...cartValue.items.filter((item: Bike) => item.id !== bikeId)
       ]
-    })
+    }
+    setValues(newCart);
   }
 
   const clearCart = () => {
-    cart(initialCart)
+    setValues(emptyCart);
   } 
 
-  return { addItem, removeItem, clearCart }
+  return { cartValue, addItem, removeItem, clearCart }; 
+
 }
 
 export default useCart;

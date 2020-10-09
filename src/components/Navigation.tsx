@@ -1,40 +1,25 @@
 import React from 'react';
-import { Cart } from '../types/types';
 import styled from 'styled-components'
-import { Button } from './styledBasicComponents';
 import { Link } from 'react-router-dom';
+import LogoutButton from './LogoutButton';
 
 const Box = styled.div`  
   background: lightgrey;
   margin: 0;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
 `
-const CartImage = styled.img` 
-  height: 20px;
-  padding-right: 10px;
-`
-interface Props {
-  cart: Cart | undefined;
-}
 
-function Navigation({ cart }: Props) {  
-  if (!cart) {
-    return null;
-  }
+function Navigation() {  
   
+
   return(
     <Box>   
-      <Link to="/"><p>Select date</p> </Link>  
-      <Link to="/bikes"><p>Select Bike</p> </Link>  
-      <Link to="/checkout">
-        <Button>        
-          <CartImage src="https://image.flaticon.com/icons/png/512/126/126083.png" /> 
-          Checkout
-        </Button>
-      </Link>      
+      <Link to="/"><p>Rent</p> </Link>  
+      <Link to="/customer"><p>Your order history</p> </Link>  
+      <LogoutButton />
     </Box> 
   );
 

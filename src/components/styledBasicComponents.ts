@@ -44,9 +44,14 @@ export const Button = styled.button`
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
+  width: 90%;
+  margin: auto;
 
   &:hover {
     background-color: #113718;
+  }
+  &:disabled {
+    background-color: lightgrey;
   }
 `;
 

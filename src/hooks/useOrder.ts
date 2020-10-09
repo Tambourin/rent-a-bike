@@ -1,34 +1,52 @@
-import { ReactiveVar } from "@apollo/client";
-import { initialOrder } from "../cache";
+import { useState } from "react";
 import { Order } from "../types/types";
 
-const useOrder = (order: ReactiveVar<Order>) => {
+const emptyOrder: Order = {
+  startDate: new Date(),
+  hours: 1,
+  customerName: ""
+}
+const key = 'order';
+
+const useOrder = () => {
+  const [ orderValue, setOrderValue ] = useState<Order>(() => {
+    const item = window.sessionStorage.getItem(key);     
+    if (item) {
+      const parsed = JSON.parse(item)  ;
+      parsed.startDate = new Date(parsed.startDate);
+      return parsed;
+    } else {
+      return emptyOrder;
+    }
+  });
+
+  const setValues = (newOrder: Order) => {
+    setOrderValue(newOrder);    
+    window.sessionStorage.setItem(key, JSON.stringify(newOrder));
+  }
+
   const setStartDate = (startDate: Date) => {
-    order({
-      ...order(),
+    const newOrder: Order = ({
+      ...orderValue,
       startDate: startDate
     });
+    setValues(newOrder);
   }
 
   const setHours = (hours: number) => {
-    order({
-      ...order(),
+    const newOrder: Order =({
+      ...orderValue,
       hours: hours
     });
-  }
-
-  const setCustomerName = (name: string) => {
-    order({
-      ...order(),
-      customerName: name
-    });
+    setValues(newOrder);
   }
 
   const clearOrder = () => {
-    order(initialOrder);
+    setValues(emptyOrder);
   }
 
-  return { setStartDate, setHours, setCustomerName, clearOrder };
+  return { orderValue, setStartDate, setHours, clearOrder }; 
+
 }
 
 export default useOrder;
