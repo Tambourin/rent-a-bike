@@ -22,7 +22,7 @@ export interface Reservation {
   start_date: Date;
   id: string;
   hours: number;
-  Resrvation_Bikes: [{
+  Reservation_Bikes: [{
     Bike: {
       id: string;
       Model: {

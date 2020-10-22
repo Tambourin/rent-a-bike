@@ -31,7 +31,7 @@ const CustomerDataView = () => {
             <div key={reservation.id}>
               <p>{reservation.start_date}</p>
               <p>{reservation.id}</p>
-                {reservation.Resrvation_Bikes.map(
+                {reservation.Reservation_Bikes.map(
                   bike => <span key={bike.Bike.id}>{bike.Bike.Model.name}, </span>
                 )}
               <hr />

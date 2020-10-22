@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 
 export const GET_BIKES = gql`
   query GetBikes($desiredDates: [date!]) {
-    Bike(where: {_not: {Resrvation_Bikes: {Reservation: {start_date: {_in: $desiredDates}}}}}) {
+    Bike(where: {_not: {Reservation_Bikes: {Reservation: {start_date: {_in: $desiredDates}}}}}) {
       id
       number
       Model {
@@ -20,14 +20,14 @@ export const ADD_RESERVATION = gql`
     $customerName: String!,
     $userId: String, 
     $hours: numeric!, 
-    $bikes: [Resrvation_Bike_insert_input!]!) {
+    $bikes: [Reservation_Bike_insert_input!]!) {
       insert_Reservation(
         objects: {
           start_date: $startDate, 
           customerName: $customerName, 
           userId: $userId,
           hours: $hours, 
-          Resrvation_Bikes: {
+          Reservation_Bikes: {
             data: $bikes
           }
         }) 
@@ -45,7 +45,7 @@ export const GET_RESERVATIONS = gql`
       start_date
       id
       hours
-      Resrvation_Bikes {
+      Reservation_Bikes {
         Bike {
           id
           Model {
